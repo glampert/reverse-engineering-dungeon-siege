@@ -3,7 +3,7 @@
 
 This repository contains tools and code to extract and convert game assets
 of the [Dungeon Siege][link_dsiege] and [Dungeon Siege: Legends of Aranna][link_ds_loa]
-games, from developer *Gas Powered Games*.
+games, from developer *Gas Powered Games* (GPG).
 
 This project aims at reverse engineering the main file formats used by Dungeon Siege
 to store its game assets (i.e.: textures, 3D models, sounds) and to provide tools
@@ -11,9 +11,9 @@ for converting them to more standard formats that can be opened/viewed outside t
 
 At the current stage, the following file formats are implemented:
 
-- Tank files (`.dsres`/`.dsmap`): Full support for opening and decompression (thanks to [Scott Bilas][link_scott]).
+- Tank files (`.dsres|.dsmap`): Full support for opening and decompression (thanks to [Scott Bilas][link_scott]).
 
-- Dungeon Siege ASPECT models (`.asp`): Partial import and a tool that converts static geometry to Wavefront OBJ.
+- Aspect models (`.asp`): Partial import and a tool that converts static geometry to Wavefront OBJ.
 
 - Siege Nodes (`.sno`): Partial import and a tool that converts the geometry to Wavefront OBJ.
 
@@ -32,7 +32,7 @@ made public on the Internet.
 
 Relevant source code for this project is located inside the `source/` directory.
 The `misc/` directory contains additional information such as more detailed description
-of the file formats, a couple screenshots from extracted models, among other things not
+of the file formats, screenshots from extracted models, among other things not
 directly related to the code. `build/` is just an empty dummy dir, but when compiling
 the source, that's where the binaries are outputted.
 
@@ -65,7 +65,7 @@ Clang or GCC (maybe it will work with Visual Studio, but I don't know starting f
 ### Building
 
 A `premake4` script is included, but it was only tested on Mac OSX / Clang
-and will probably not work out-of-the-box with GCC/Linux. Fixing eventual
+and will probably not work out-of-the-box with GCC / Linux. Fixing eventual
 issues should be easy, nevertheless.
 
 To build, navigate to the source code root and run:
@@ -104,7 +104,7 @@ have a lot better and more game developers today...
 Another big thanks to Scott Bilas for providing detailed documentation and source code
 samples on the Tank format and other details about the inner workings of Dungeon Siege.
 
-And lastly, the [SiegeTheDay][http://www.siegetheday.org/] community and forums for making
+And lastly, the [SiegeTheDay](http://www.siegetheday.org/) community and forums for making
 the 3DMax import/export scripts available. It would have taken many more months to reverse
 the 3D model formats if it wasn't for them!
 
@@ -114,11 +114,11 @@ This project's source code is released under the [MIT License](http://opensource
 
 ## Eye candy
 
-![ASP models extracted from the game](todo/a/file/path.png "ASP models extracted from the game")
+![ASP models extracted from the game](https://raw.githubusercontent.com/glampert/reverse-engineering-dungeon-siege/master/misc/screenshots/montage.png "ASP models extracted from the game")
 
 ---
 
-Have fun!
+The blessings of Azunai The Defender upon you! Travel safely!
 
 
 [link_dsiege]: https://en.wikipedia.org/wiki/Dungeon_Siege
