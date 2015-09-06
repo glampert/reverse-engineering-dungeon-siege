@@ -1,0 +1,160 @@
+Readme for gmax importers for Dungeon Siege
+===========================================
+
+The files in this archive are zipped with their paths relative to the gmax folder. This
+should put them in right places when you unzip.
+
+The import scripts were originally created by Lance at the Elemental Project, and the 	
+initializer script to set them up by Biddle at GPG. These worked for all ASP,PRS and SNO
+files shipped with the original version of Dungeon Siege. But when anything was exported
+from SiegeMax, it used a file version (4.0) later than the importers would handle. This is
+no problem for anyone working on a DS1 mod, as they would either have the base DS1 files,
+which would import without problems, or the gmax files themselves for the newer material.
+Art Packs are also available for much of the DS1 material, so you don't need to import
+those.
+
+The problems started with Legends of Aranna, as the addition mesh and animation content
+would not import with the importers as they were. Xaa and I (and I think MCarp for the
+SNO importer) had to add some code to recognise the new file versions. This worked for
+LoA, but around the release of DS2, there were changes we could not account for. The
+versions in this archive still have problems that will require extra work to get around.
+
+1. The bones will normally import in the correct locations, but may be rotated. This makes
+the animations apply with a corresponding rotation on each bone, and turn the mesh into a
+pretzel. If a rotation does occur, it will be a 90 degree rotation that can be "undone" by
+repeating the import another three times - i.e. export the result to a temp file and 
+re-import/export it three more times.
+
+2. The vertex weighting information in the ASP files was changed at about file version 5, 
+and we never worked out the new format. The only workaround is to re-weight the skinmesh
+onto the bones manually, but this is always required after any edits to the mesh, so it's
+something you'll be doing after any remodelling of the mesh anyhow. If you're building new
+animations for existing characters, then a simple weighting of 1.0 to the nearest bone, with
+0.5 at the joints will provide a "low fidelity" weighting to serve as a basis for your animations.
+You will need to re-test the PRS files with the original ASP after you get them working by 
+launching the viewever from gmax. I.e. export the PRS, load the original mesh and then select
+your new animation.
+
+3. The XP expansion, DS2 and BW have all added file versions. All of these have the bone and
+vertext weighting issues above. However, the majority of characters in DS2 use the same skeletons
+as the DS1 farmboy and farmgirl (so they could carry over the animations), so the art packs for
+DS1 remain valid sources of skeletons and animations for the DS2 figures (although the meshes
+were updated). This is true for the elves and dryads, as well as the humans.
+
+4. In Broken World, some characters were re-created with extra bones to support lip movement, 
+and limited facial expressions. These are mainly NPC's but the BW Dwarf is also one. There is
+no compatibility with the DS1 dwarf. You may be able to import the DS2 dwarf, but all the above
+issues apply.
+
+--------------------------------------------------------------------------------------------
+
+Some other observations:
+
+The armor meshes (body, boot, glove or helmet/head) use the same skeleton as the character mesh.
+This means that you can use a DS1 farmgirl skeleton to make a new helmet for a DS2 Dryad, as they
+are identical. Once you have untwisted a skeleton by repeated import, save a copy to use for new
+armor, or use one from an Art Pack where you can.
+
+--------------------------------------------------------------------------------------------
+And below is Lance's original readme text.
+--------------------------------------------------------------------------------------------
+
+Siege Max Update v1.5
+Team Elemental
+March 2004
+
+
+Installation:
+
+  To install, unzip to your gmax directory, overwriting
+  all the files when it prompts you. For example, if
+  gmax is installed at c:\gmax, run winzip and "Extract to:"
+  c:\gmax, with "Use folder names" enabled.
+
+
+Notes:
+
+  Importing is much like unscrambling an egg. No guarantees
+  are made that you are able to import, then export something,
+  and retain the integrity of the artwork. The most problematic
+  unscrambling is with animation. For examples, with bones,
+  the original dimensions can never be fully recreated, because
+  on export, a bone (fins and all) is converted to 7 simple
+  numbers.
+
+  SNO Import only currently supports version 7 siege nodes.
+  ASP Import only currently supports versions 1.3 up to 5.
+  PRS Import only currently supports version 3 animations.
+  This means, that Siege Max exported art assets probably
+  cannot be reimported. Though, why would you need to anyhow?
+
+  The scaling is correct. Drop a refobj next to an imported
+  model if you don't believe me. GPG's scaling is 1 unit =
+  1 millimeter. So a 2 meter tall droog comes out to be 2000
+  units. Yes I know, the grid get clipped by the far plane
+  when you're zoomed out that much. What you can do, is shrink
+  it down while you work on it, then blow it up right before
+  export.
+
+  There is no quick way to set vertex weights in maxscript. But
+  if GPG wants to throw me a copy of gmax dev that'd be awesome
+  *hint* *hint*. Anyhow, when you have 'skin mesh' on, it has to
+  go through every single vertex and set the weights. I've turned
+  redrawing off for the duration of this action, so it might
+  appear that gmax has locked up. Just be patient. As long as
+  you can move your mouse cursor, the import should still be
+  working. Also note that the more verts in the model you're
+  importing, the longer it'll take. If you trying to import the
+  dragon, go out for some air and come back in like 5 minutes
+  (seriously). Sorry about this, but I've had this problem for 2
+  years, and I haven't found a way around it w/o stepping outside
+  maxscript, and using DLL plugins.
+
+  There are no guarantees that things will be "export-ready" right
+  after import. There is unutilized data read, and unknown data
+  that's skipped over. Keep in mind that creating custom artwork
+  still requires a good amount of your own elbow grease. If things
+  aren't working, and things don't want to re-export, keep in mind
+  that it's just a bunch of verts, faces, and texture coordinates
+  wrapped around some bones. You'll still need to read GPG's
+  tutorials. You'll still need to be comfortable with gmax. And
+  you'll definately still need to have artistic talent to manipulate
+  things into an "export-ready" setup. Remember guys, import/export
+  is nothing similar to open/save!
+
+
+Pitfalls:
+
+  If you're getting an "INTERNAL EXCEPTION CAUGHT" message when
+  you try to export or preview, make sure you have a material that's
+  pointing to existing .PSD files.
+
+
+Version History:
+
+[1.1]
+* fixes a bug with the sno modifier
+* added ability to import sno geometry
+  (does not create door nor logical node info)
+
+[1.2]
+* added a GripMarker primitive object, with
+  support for weapon_grip and shield_grip markers
+* added ability to import asp geometry and bones
+  (does not create any stitch info yet)
+
+[1.3]
+* redid calculations for bone creation
+* tweaked a variety of asp importer things
+* added ability to import prs animations and notes
+  (does not work with tracers yet)
+
+
+
+Lance
+ucdlance@acm.org
+Team Elemental
+R&D Department
+"We push more polygons before breakfast than most people do in a day"
+
+
