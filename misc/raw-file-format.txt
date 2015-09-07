@@ -1,0 +1,36 @@
+
+----------------------------------
+Dungeon Siege RAW texture format
+----------------------------------
+
+The RAW format (or simply Raw; not an initialism) is a bitmap format
+used to store all the textures and sprites used by Dungeon Siege.
+Raw textures are always stored inside Tank files.
+
+This is a custom format, not directly related to other commercial
+formats with the ".raw" filename extension.
+
+The name comes from the fact that pixels are stored uncompressed (raw) in the file.
+Raw textures can also contain the full set of mipmap surfaces.
+
+File layout is:
+
+Format: BINARY.
+Byte order: LITTLE ENDIAN, but pixels are stores as BGRA DWORDs.
+
+A Raw texture file starts with a tiny 16 bytes header that contains the dimensions
+of the base surface (mipmap 0) and the number of surfaces/mipmaps. The dimensions
+of subsequent mipmaps surfaces are calculated from that.
+
+The first 8 bytes of the header are the 4CCs "ipaR" (or "Rapi" backwards) and "8888".
+
+BGRA pixel data for surface 0 (the largest one) follows immediately. The next mipmap
+surface follows where the first one ends, and so on for all the surface until the final 1x1 level.
+
+The Raw format is very straightforward and was meant to be fast to load and pass
+on to the rendering back-end. It was stored uncompressed because Tank files are
+already compressed, so no point in compressing twice.
+
+Look at the RapiRawReader.h provided by Scott Bilas <http://scottbilas.com/games/dungeon-siege/>
+or our raw_image.hpp/.cpp implementation for the details. As you'd expect, there's nothing surprising about it.
+

@@ -1,0 +1,88 @@
+
+----------------------------------
+Dungeon Siege Tank archive format
+----------------------------------
+
+The "Tank" file format is an archive format similar to a Zip archive,
+that is used to store most of the assets of Dungeon Siege 1 and DS LoA.
+
+Tank files usually have the extensions '.DSM', '.DSMAP' and '.DSRES'.
+
+Common Tanks found in the game's directory include:
+
+- World.dsmap, World1.dsm, MpWorld.dsmap
+- Objects.dsres, Terrain.dsres, Voices.dsres, Logic.dsres, DevLogic.dsres.
+
+Depending on version and expansions, there might be more files or with different names.
+
+----------------------------------
+
+File format is BINARY with LITTLE ENDIAN byte order.
+
+A Tank starts with an informational header that contains offsets, CRCs and printable strings.
+The first two fields of the header are the 4CCs "DSig" followed by "Tank".
+
+Header version for the original release of Dungeon Siege is 1.0.2. Higher versions can be
+found on patched versions and re-releases (like the Steam release).
+
+The most relevant fields in the header are the offsets to the start of the
+file/directory entry lists, which are placed at the end of the file.
+
+Q: Why are the file/directory entries at the end of the Tank file?
+A: Possibly for two reasons:
+ 1) To keep the layout similar to a Zip archive, which uses this same setup.
+    A Zip is built this way to facilitate appending new files to an existing archive.
+ 2) Because one way of getting the length of a file is to seek to the end then
+    query the position of the "read pointer". So if you are seeking to the end
+    to get the length, it makes sense to also put the file entry list in there,
+    since that's the first thing the program needs to read in before further processing.
+
+Refer to siege/tank_file.hpp and the original TankStructure.h from Scott Bilas
+for the C++ data structures used and detailed comments on the layout of a Tank.
+Our reader is divided into siege/tank_file.cpp and siege/tank_file_reader.cpp.
+
+Individual files inside the archive are possibly stored with compression.
+Tanks supported files compressed with ZLib and LZO compression, and also uncompressed (raw) data.
+ZLib is the most frequently used compression. We use Mini-Z to handle decompression for us.
+
+The format was carefully designed to be mostly aligned to DWORD boundaries (4 bytes boundaries).
+Text strings are prefixed by a length (16bits) and padded to align to a DWORD. This was
+probably done like this to allow safely mapping the file into memory using the WinAPI.
+
+Overall, the Tank format seems very optimized and tunned to perfection, serving the needs of
+the game as efficiently as possible. Clearly a format devised by an experienced programmer.
+
+My implementation was largely influenced by the source code snippets provided
+by Scott Bilas in his website: <http://scottbilas.com/games/dungeon-siege/>
+
+----------------------------------
+Simple diagram of a Tank
+----------------------------------
+
++--------------------+
+|                    |
+|     Tank Header    |
+|                    |
+|--------------------|
+|                    |
+|     File Data      | --> Note: Data possibly compressed (ZLib/LZO)
+|     File Data      |
+|     .........      |
+|     .........      |
+|     .........      |
+|     .........      |
+|                    |
+|--------------------|
+|                    |
+| Set of directory   |
+| entries with paths |
+|                    |
+|--------------------|
+|                    |
+|   Set of file      |
+|   entries with     |
+|   filenames only   |
+|                    |
++--------------------+
+EOF
+

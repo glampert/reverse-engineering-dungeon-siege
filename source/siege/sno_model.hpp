@@ -29,7 +29,7 @@ namespace siege
 // or just "Nodes" that compose the static level geometry of
 // Dungeon Siege. A Siege Node is much like a 3D tile of arbitrary
 // dimensions. The world of Dungeon Siege is built by attaching
-// these nodes side by side to construct the lager scenes.
+// these nodes side by side to construct the larger scenes.
 //
 // The article by Scott Bilas "The Continuous World of Dungeon Siege"
 // explains the node system is great detail. You can find an online copy at:

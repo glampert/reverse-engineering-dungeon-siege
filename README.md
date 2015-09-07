@@ -21,6 +21,8 @@ At the current stage, the following file formats are implemented:
 
 - Skrit and Gas files are plain text, so they can be easily viewed and edited once extracted from a Tank.
 
+Hint: Check the `misc/` directory for detailed descriptions of each format.
+
 **Disclaimer:**
 
 The goal of this project is to experiment, research, and educate on the topics

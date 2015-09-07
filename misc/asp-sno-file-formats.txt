@@ -1,0 +1,132 @@
+
+----------------------------------
+Dungeon Siege ASP 3D model format
+----------------------------------
+
+The ASP file format (short for Aspect, no idea why the name...) is the format used
+to store geometry data for the game objects besides the terrain (which uses the SNO format).
+
+File extension is ".ASP". Layout is BINARY, LITTLE ENDIAN. Always starts with the 4CC "BMSH".
+
+The Aspect format is a chunked format that somewhat resembles the old 3DS format
+(some of it was probably based on the 3DS, since the tool that generated it was 3DMax).
+
+Each chunk or section could in theory be presented in any order, but they do follow
+a fixed ordering. A section might be omitted, however, so the safest bet is to assume
+no ordering of contents and handle sections as they are read in.
+
+The format is fairly complex (unnecessarily complex, in my opinion) and reading it
+takes a loop that gets a 4CC and tests it against the know sections ids:
+
+BMSH -> Model header.
+BONH -> Bone Hierarchy.
+BSUB -> Sub-mesh info.
+BSMM -> More data related to sub-meshes or materials.
+BVTX -> Model vertex positions.
+BCRN -> Corners (what I would call a model vertex).
+WCRN -> Weighted corners (same as BCRN but with vertex weights).
+BVMP -> Bunch of corner indexes. Not quite sure what for...
+BTRI -> Triangle indexes.
+BVWL -> Stuff related to bone weights.
+STCH -> Stitches (what the heck are they?).
+RPOS -> Rotations and positions for bones.
+BBOX -> Bounding boxes? Seems like it was never fully implemented...
+BEND -> Some misc info strings for displaying.
+
+A lot of data also appears to be repeated in the format, like the BVMP which
+is redundant with the face info from BTRI. Also, why keep the weighted vertexes
+in WCRN and simpler ones in BCRN? For different LODs?... Backward compatibility?...
+
+Vertex indexes are 32bits.
+
+Models also have skeleton/bones for animation when paired with a PRS animation file.
+Bones have name strings that are stored in the BMSH section as null separated strings
+inside the "text field" of BMSH. The contents of each section are basically arrays
+of structures. Each section will start with a count for the number of elements to read next.
+
+The overall processing loop for an ASP model is something in the lines of:
+
+while not end_of_file()
+{
+    read_a_4cc();
+    if 4cc == BMSH then
+        handle_BMSH_section();
+
+    if 4cc == BONH
+        handle_BONH_section();
+
+    // and so on for each section.
+}
+
+This format is far from optional and distinct from the other formats
+which seem a lot more optimized, which makes me think it was probably
+devised by some technical artist with limited knowledge of programming...
+Or maybe it's just a format that grew out of hand while someone tried
+to maintain it backward-compatible with previous versions...
+
+Refer to the importer implementation for the details:
+asp_model.hpp, asp_model.cpp and asp_importer.cpp.
+
+The original script used as base for the C++ importer can be found
+in the thirdparty/gpg/siege_max/ directory. Look for ASPImport.ms.
+
+----------------------------------
+Dungeon Siege SNO 3D model format
+----------------------------------
+
+The SNO format (4CC "SNOD") are the so called "Siege Nodes" or just "Nodes"
+that compose the static level geometry of Dungeon Siege. A Siege Node is much
+like a 3D tile of arbitrary dimensions. The world of Dungeon Siege is built by
+attaching these nodes side by side to construct the larger scenes.
+
+The article by Scott Bilas "The Continuous World of Dungeon Siege" explains the
+node system is great detail. You can find an online copy at: <http://scottbilas.com/files/2003/gdc_san_jose/continuous_world_paper.pdf>
+
+A SNO starts with a big header, first 4 bytes = "SNOD", followed by a 32bits version DWORD,
+which should be >= 7 for an official DS release. The header contains several unused DWORD fields
+which are normally set to zero. No information on why those fields were left there wasting space.
+
+File layout is BINARY, LITTLE ENDIAN.
+
+The format is relatively straightforward, with four (4) sections following the header.
+Each section is just a binary dump of an array of structures, prefixed by the length of
+this array in elements as a 32bits DWORD.
+
+A SNO might also store text strings in it. A string is a sequence of ASCII chars
+terminated by one or more zeros. To read a string, keep reading bytes until you get a null or EOF.
+
+Sections:
+
+- The "spots" section. Not sure what a spot meant in the context of Dungeon Siege.
+  Each spot consists of a 4x3 transformation matrix and a string or arbitrary length.
+  This was probably used to position the Siege Nodes in the world.
+
+- The "doors" section. A door is how they called the passages between nodes.
+  As explained in the Continuous World paper, the term remained from the early
+  development stages when they were actually doors, but later the term was just
+  used to mean the passages between node. This data is not used for rendering,
+  but was probably significant for AI pathfinding and game logic.
+  Each door struct is a 32bits index, a 4x3 transformation matrix
+  and an array of "hot spot" indexes (not sure what those are for).
+
+- Next up are the "corners". Corner is how they called an interleaved model vertex
+  in Dungeon Siege (if you think about it, that's not a misnomer...). Each corner
+  or vertex is composed of the XYZ 3D position of the vertex (float), the XYZ vertex
+  normal for lighting (float), the vertex color, strangely stored as RBGA (4 bytes)
+  and lastly the U and V texture coordinates (floats).
+
+- Last in the SNO file are the "surfaces": Surfaces are the mesh faces (always triangles).
+  Each surface stores a list of 16bits triangle indexes for the tris making that surface.
+  Note that unlike the ASP format, SNO files store the indexes as uint16s.
+  Each surface also has a text string with its texture/material name, which
+  makes it equivalent to what some would call a model sub-mesh.
+
+Overall, the SNO format is fairly straightforward and easy to import.
+All sections have a fixed position, and so it doesn't require loops or
+multiple passes over the file to load it. You can even skip over an entire
+section if you want to by just multiplying the element count with the size of each entry.
+
+Look and the implementation in sno_model.hpp/.cpp and sno_importer.cpp for the details.
+My importer was based on the 3D Max import/export scripts found in the SiegeTheDay.org forums.
+You can find a copy of them inside the thirdparty/gpg/siege_max/ directory.
+

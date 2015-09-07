@@ -1,0 +1,91 @@
+
+There are a number of other file formats used by Dungeon Siege.
+Some are plain text, others are binary. The most interesting ones:
+
+.PRS   -> Animation file. File magic is 'ANIM'. (BIN)
+.SKRIT -> High-level script code; hand written. (TEXT)
+.GAS   -> Misc config/metadata. Some are also skrit scripts. Most are probably auto-generated. (TEXT)
+.LQD20 -> Unknown. Directory metadata for an editor perhaps? Always named "dir.lqd20". File magic is '.LQD'. (BIN)
+.LNC   -> Unknown. Siege Node links? Related to Siege Nodes somehow... No apparent file magic/id. (BIN)
+.BIK   -> Standard Bink video from Rad Game Tools: <http://www.radgametools.com/bnkdown.htm>
+
+Those are all stored inside Tank archives, so you need
+to first decompress a Tank to be able to see them.
+
+----------------------------------
+PRS animation data:
+----------------------------------
+
+This format contains animation data/keyframes needed to animate
+the skeletons of an ASP model. Implementing an importer for it
+should be easy, since there's a 3D Max script available with a functioning
+implementation. See /source/thirdparty/gpg/siege_max/scripts/PRSImport.ms
+
+No idea what "PRS" stands for...
+
+----------------------------------
+SKRIT/GAS:
+----------------------------------
+
+These are plain text files. The ones with ".skrit" extension are the game logic
+scripts. The Skrit language uses a C-based syntax and is very well documented.
+
+Check the following links for references:
+
+Skrit technical manual:
+ - http://scottbilas.com/files/dungeon_siege/Skrit.html
+
+FuBi: Automatic Function Exporting for Scripting and Networking:
+ - http://scottbilas.com/files/2001/gdc_san_jose/fubi_paper.html
+ - http://scottbilas.com/files/2001/gdc_san_jose/fubi_paper_supplement.html
+
+The ".gas" files (Tanks store gas, get it :P) are miscellaneous configuration/metadata
+files. Most seem auto-generated. Some contain skrit code inside. Gas files
+store various types of metadata required by the game. ASP models and textures
+are usually paired with a Gas file containing additional parameters.
+
+----------------------------------
+LNC (unknown):
+----------------------------------
+
+Usually the extension of a file named "siege_nodes.lnc", so more then likely
+related to the Siege Nodes. They can be found inside the World/World1/MpWorld Tanks.
+
+Some are pretty big 1+MB, some are just a few KB.
+
+From a quick look in the Hex editor, nothing meaningful pops up.
+Perhaps the data is compressed? Unlikely, since Tank archives are
+already compressed, but that could explain the seemingly random patterns...
+
+There are several blocks of consecutive zeros in them. Padding maybe?
+
+----------------------------------
+LQD20 (unknown):
+----------------------------------
+
+Always a file named "dir.lqd20" for every directory inside a Tank.
+File magic is the 4CC '.LQD' (0x2E4C5144). Probably stands for "Liquid",
+taking into account all the references to tanks, gas ...
+
+Second DWORD seems to be always 0x06000100 (64542 LE).
+Third DWORD is always zero.
+
+Tiny binary files (a few KBs max). There's a string with the name of the parent
+directory right at the end. Apparently zero terminated. No length prefix. Doesn't seem to be aligned either.
+
+Some have filename strings in them and strings representing hexadecimal
+constants (GUIDs probably). Example: "filename t_cf_fort-a1 0xab040201"
+
+These were maybe used by the in-house editors/tools for file system indexing?
+Seems superfluous for the game's asset manager since the Tank archives already
+have a virtual file system with a list of all files/directories...
+
+----------------------------------
+BIK videos:
+----------------------------------
+
+Very standard compressed video format used by a lot of games in the late nineties.
+Probably still used today, but I guess it lost space for more standard formats like MP4.
+
+You can get a free BIK video player at www.radgametools.com.
+
