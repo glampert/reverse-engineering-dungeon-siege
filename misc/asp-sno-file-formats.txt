@@ -16,7 +16,7 @@ a fixed ordering. A section might be omitted, however, so the safest bet is to a
 no ordering of contents and handle sections as they are read in.
 
 The format is fairly complex (unnecessarily complex, in my opinion) and reading it
-takes a loop that gets a 4CC and tests it against the know sections ids:
+takes a loop that gets a 4CC and tests it against the known sections ids:
 
 BMSH -> Model header.
 BONH -> Bone Hierarchy.
