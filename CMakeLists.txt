@@ -7,6 +7,6 @@ file (GLOB_RECURSE UTILS_SOURCE "source/utils/*.cpp")
 include_directories ("source")
 
 add_executable (asp2obj "source/tools/asp2obj/asp2obj.cpp" ${SIEGE_SOURCE} ${UTILS_SOURCE})
-# add_executable (raw2x "source/tools/raw2x/raw2x.cpp" ${SIEGE_SOURCE} ${UTILS_SOURCE})
+add_executable (raw2x "source/tools/raw2x/raw2x_base.cpp" "source/tools/raw2x/raw2png.cpp" ${SIEGE_SOURCE} ${UTILS_SOURCE})
 add_executable (sno2obj "source/tools/sno2obj/sno2obj.cpp" ${SIEGE_SOURCE} ${UTILS_SOURCE})
 add_executable (tankdump "source/tools/tankdump/tankdump.cpp" ${SIEGE_SOURCE} ${UTILS_SOURCE})
