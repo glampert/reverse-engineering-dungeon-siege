@@ -13,21 +13,20 @@
 
 #include "utils/filesys.hpp"
 
-// POSIX includes:
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef WIN32
-    #include <unistd.h>
-#else
-    #include <direct.h> // _mkdir
-#endif
 #include <errno.h>
 
 #if defined(WIN32) || defined(WIN64)
+    #include <direct.h> // _mkdir
     // Copied from linux libc sys/stat.h:
     #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
     #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
-#endif
+    #define SIEGE_MAKE_DIR(dirname) _mkdir(dirname)
+#else // !WINDOWS
+    #include <unistd.h>
+    #define SIEGE_MAKE_DIR(dirname) mkdir((dirname), 0777)
+#endif // WINDOWS
 
 namespace utils
 {
@@ -108,11 +107,7 @@ bool createDirectory(const std::string & dirPath)
 	struct stat dirStat = {};
 	if (stat(dirPath.c_str(), &dirStat) != 0)
 	{
-#ifndef WIN32
-        if (_mkdir(dirPath.c_str(), 0777) != 0)
-#else
-        if (_mkdir(dirPath.c_str()) != 0)
-#endif
+        if (SIEGE_MAKE_DIR(dirPath.c_str()) != 0)
 		{
 			return false;
 		}
