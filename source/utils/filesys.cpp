@@ -16,8 +16,18 @@
 // POSIX includes:
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifndef WIN32
+    #include <unistd.h>
+#else
+    #include <direct.h> // _mkdir
+#endif
 #include <errno.h>
+
+#if defined(WIN32) || defined(WIN64)
+    // Copied from linux libc sys/stat.h:
+    #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+    #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
 
 namespace utils
 {
@@ -98,7 +108,11 @@ bool createDirectory(const std::string & dirPath)
 	struct stat dirStat = {};
 	if (stat(dirPath.c_str(), &dirStat) != 0)
 	{
-		if (mkdir(dirPath.c_str(), 0777) != 0)
+#ifndef WIN32
+        if (_mkdir(dirPath.c_str(), 0777) != 0)
+#else
+        if (_mkdir(dirPath.c_str()) != 0)
+#endif
 		{
 			return false;
 		}

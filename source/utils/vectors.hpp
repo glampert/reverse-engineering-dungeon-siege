@@ -62,8 +62,8 @@ struct Vec2Impl final
 	const T * getData() const;
 
 	// Operators:
-	T &        operator [] (uint index);
-	T          operator [] (uint index) const;
+	T &        operator [] (uint32_t index);
+	T          operator [] (uint32_t index) const;
 	Vec2Impl   operator  + (const Vec2Impl & other) const;
 	Vec2Impl   operator  - (const Vec2Impl & other) const;
 	Vec2Impl   operator  * (T scalar) const;
@@ -105,7 +105,7 @@ struct Vec2Impl final
 	static Vec2Impl negativeInf();
 
 	// Dimensions of this vector (2).
-	static constexpr uint getDimensions() { return 2; }
+	static constexpr uint32_t getDimensions() { return 2; }
 };
 
 // ========================================================
@@ -147,8 +147,8 @@ struct Vec3Impl final
 	Vec2Impl<T> getVec2() const;
 
 	// Operators:
-	T &        operator [] (uint index);
-	T          operator [] (uint index) const;
+	T &        operator [] (uint32_t index);
+	T          operator [] (uint32_t index) const;
 	Vec3Impl   operator  + (const Vec3Impl & other) const;
 	Vec3Impl   operator  - (const Vec3Impl & other) const;
 	Vec3Impl   operator  * (T scalar) const;
@@ -200,7 +200,7 @@ struct Vec3Impl final
 	static Vec3Impl negativeInf();
 
 	// Dimensions of this vector (3).
-	static constexpr uint getDimensions() { return 3; }
+	static constexpr uint32_t getDimensions() { return 3; }
 };
 
 // ========================================================
@@ -255,8 +255,8 @@ struct Vec4Impl final
 	Vec3Impl<T> getVec3() const;
 
 	// Operators:
-	T &        operator [] (uint index);
-	T          operator [] (uint index) const;
+	T &        operator [] (uint32_t index);
+	T          operator [] (uint32_t index) const;
 	Vec4Impl   operator  + (const Vec4Impl & other) const;
 	Vec4Impl   operator  - (const Vec4Impl & other) const;
 	Vec4Impl   operator  * (T scalar) const;
@@ -303,7 +303,7 @@ struct Vec4Impl final
 	static Vec4Impl negativeInf();
 
 	// Dimensions of this vector (4).
-	static constexpr uint getDimensions() { return 4; }
+	static constexpr uint32_t getDimensions() { return 4; }
 };
 
 // ========================================================
@@ -390,14 +390,14 @@ const T * Vec2Impl<T>::getData() const
 }
 
 template<class T>
-T & Vec2Impl<T>::operator [] (const uint index)
+T & Vec2Impl<T>::operator [] (const uint32_t index)
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<T *>(this)[index];
 }
 
 template<class T>
-T Vec2Impl<T>::operator [] (const uint index) const
+T Vec2Impl<T>::operator [] (const uint32_t index) const
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<const T *>(this)[index];
@@ -702,14 +702,14 @@ Vec2Impl<T> Vec3Impl<T>::getVec2() const
 }
 
 template<class T>
-T & Vec3Impl<T>::operator [] (const uint index)
+T & Vec3Impl<T>::operator [] (const uint32_t index)
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<T *>(this)[index];
 }
 
 template<class T>
-T Vec3Impl<T>::operator [] (const uint index) const
+T Vec3Impl<T>::operator [] (const uint32_t index) const
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<const T *>(this)[index];
@@ -1131,14 +1131,14 @@ Vec3Impl<T> Vec4Impl<T>::getVec3() const
 }
 
 template<class T>
-T & Vec4Impl<T>::operator [] (const uint index)
+T & Vec4Impl<T>::operator [] (const uint32_t index)
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<T *>(this)[index];
 }
 
 template<class T>
-T Vec4Impl<T>::operator [] (const uint index) const
+T Vec4Impl<T>::operator [] (const uint32_t index) const
 {
 	assert(index < getDimensions() && "Index out of range!");
 	return reinterpret_cast<const T *>(this)[index];
