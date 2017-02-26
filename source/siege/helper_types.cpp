@@ -65,7 +65,7 @@ std::string versionWordToStr(const uint32_t version)
 	char verStr[256];
 
 	// Print as: major.minor.build
-	std::sprintf(verStr, "%u.%u.%u", major, minor, build);
+	std::snprintf(verStr, sizeof(verStr), "%u.%u.%u", major, minor, build);
 	verStr[sizeof(verStr) - 1] = '\0';
 
 	return verStr;
@@ -88,7 +88,7 @@ std::ostream & operator << (std::ostream & s, const SystemTime & time)
 	char timeStr[512];
 
 	// Print as: dd/mm/yyy  hh:mm:ss
-	std::sprintf(timeStr, "%02d/%02d/%04d  %02d:%02d:%02d",
+	std::snprintf(timeStr, sizeof(timeStr), "%02d/%02d/%04d  %02d:%02d:%02d",
 		time.day,  time.month,  time.year,
 		time.hour, time.minute, time.second);
 
@@ -108,7 +108,7 @@ std::ostream & operator << (std::ostream & s, const Guid & guid)
 	//
 	// Sample: a42790e0-7810-11cf-8f52-0040333594a3
 	//
-	std::sprintf(guidStr,
+	std::snprintf(guidStr, sizeof(guidStr),
 		"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
 		guid.data1,
 		guid.data2,
@@ -157,7 +157,15 @@ std::ostream & operator << (std::ostream & s, const FileTime ft)
 	}
 
 	const time_t t = ft.toPortableTime();
+
+#ifdef _MSC_VER
+    std::string ftStr;
+    char ctimeBuf[256];
+    ctime_s(ctimeBuf, sizeof(ctimeBuf), &t);
+    ftStr = ctimeBuf;
+#else // _MSC_VER
 	std::string ftStr = std::ctime(&t);
+#endif // _MSC_VER
 
 	// Remove the '\n' always added by ctime():
 	if (!ftStr.empty())

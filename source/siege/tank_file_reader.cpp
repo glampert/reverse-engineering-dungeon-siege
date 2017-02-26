@@ -457,14 +457,14 @@ ByteArray TankFile::Reader::extractResourceToMemory(TankFile & tank, const std::
 				tank.readBytes(compressedData.data(), compressedData.size());
 
 				uncompressedData.resize(chunk.uncompressedSize + chunk.extraBytes);
-				uncompressedLen = uncompressedData.size();
+				uncompressedLen = static_cast<unsigned long>(uncompressedData.size());
 
 				TankReaderLog("Attempting to decompress resource chunk #" << (c + 1)
 						<< " of " << compressedHeader.numChunks << "...");
 
 				// Let Mini-Z do the decompression:
 				const int errorCode = utils::compression::decompress(uncompressedData.data(), &uncompressedLen,
-							compressedData.data(), compressedData.size() - chunk.extraBytes);
+							compressedData.data(), static_cast<unsigned long>(compressedData.size() - chunk.extraBytes));
 
 				assert(uncompressedLen != 0 && "Nothing was decompressed!");
 				assert(uncompressedLen <= uncompressedData.size() && "Buffer overrun!");

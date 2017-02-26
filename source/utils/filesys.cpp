@@ -66,7 +66,7 @@ std::string getFilenameExtension(const std::string & filename, const bool includ
 	const size_t lastDot = filename.find_last_of('.');
 	if (lastDot != std::string::npos)
 	{
-		const long extensionChars = filename.length() - lastDot;
+		const int64_t extensionChars = filename.length() - lastDot;
 		if (extensionChars > 0)
 		{
 			extension.assign(filename, includeDot ? lastDot : (lastDot + 1), extensionChars);
@@ -136,9 +136,13 @@ bool createPath(const std::string & pathEndedWithSeparatorOrFilename)
 	assert(!pathEndedWithSeparatorOrFilename.empty());
 	assert(pathEndedWithSeparatorOrFilename.length() < arrayLength(dirPath) && "Pathname too long!");
 
+#ifdef _MSC_VER
+    strcpy_s(dirPath, pathEndedWithSeparatorOrFilename.c_str());
+#else // _MSC_VER
 	std::strncpy(dirPath, pathEndedWithSeparatorOrFilename.c_str(), arrayLength(dirPath) - 1);
-	char * pPath = dirPath;
+#endif //_MSC_VER
 
+	char * pPath = dirPath;
 	while (*pPath != '\0')
 	{
 		// Works for both Win and Unix without the need for extra tweaks.
@@ -191,7 +195,15 @@ bool tryOpen(std::ifstream & file, const std::string & filename, const std::ifst
 
 std::string getLastFileError()
 {
+#ifdef _MSC_VER
+    std::string str;
+    char errorBuf[512];
+    strerror_s(errorBuf, errno);
+    str = errorBuf;
+#else // _MSC_VER
 	std::string str{ std::strerror(errno) };
+#endif // _MSC_VER
+
 	errno = 0;
 	return str;
 }

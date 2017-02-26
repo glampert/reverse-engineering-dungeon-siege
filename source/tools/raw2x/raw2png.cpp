@@ -28,8 +28,8 @@ public:
 	 Raw2Png(const int argc, const char * argv[]);
 	~Raw2Png();
 
-	void writeImageSurf(const siege::RawImage & rawImage, const unsigned int surfIndex,
-	                    const std::string & filename, const bool swizzlePixels) const override;
+	void writeImageSurf(const siege::RawImage & rawImage, unsigned int surfIndex,
+	                    const std::string & filename, bool swizzlePixels) const override;
 };
 
 Raw2Png::Raw2Png(const int argc, const char * argv[])
@@ -39,8 +39,8 @@ Raw2Png::Raw2Png(const int argc, const char * argv[])
 Raw2Png::~Raw2Png()
 { }
 
-void Raw2Png::writeImageSurf(const siege::RawImage & rawImage, const unsigned int surfIndex,
-                             const std::string & filename, const bool swizzlePixels) const
+void Raw2Png::writeImageSurf(const siege::RawImage & rawImage, unsigned int surfIndex,
+                             const std::string & filename, bool swizzlePixels) const
 {
 	rawImage.writeSurfaceAsPngImage(surfIndex, filename, swizzlePixels);
 }

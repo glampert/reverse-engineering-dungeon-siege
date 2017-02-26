@@ -60,23 +60,26 @@ this project and fall under a different license.
 The only dependencies of the project, at the moment, are a few Unix system calls (namely `stat` and `mkdir`)
 which are all contained inside `LibUtils`. The libraries and tools are all written using the full
 feature set of **C++11**, plus its Standard Library, so compiling will require a recent compiler like
-Clang or GCC (maybe it will work with Visual Studio, but I don't know starting from which version...).
+Clang or GCC. It should also compile with Visual Studio 2015 or more recent.
 
 [Mini-Z][link_mz] is currently the only external code required, and it is included in the `thirdparty/` dir.
 
 ### Building
 
-A `premake4` script is included, but it was only tested on Mac OSX / Clang
-and will probably not work out-of-the-box with GCC / Linux. Fixing eventual
-issues should be easy, nevertheless.
+A `premake4` script is included, which was only tested on Mac OSX with Clang
+and will probably not work out-of-the-box with GCC & Linux. Fixing eventual
+issues should be easy, nevertheless. This script is deprecated. We now have
+a `CMakeLists.txt` that should be used instead. It can generate the projects
+for Windows (VS) or Linux/OSX (GCC/Clang).
 
-To build, navigate to the source code root and run:
+To generate the project files using CMake, you can use the command line or the 
+[CMake GUI for Windows](https://cmake.org/).
+
+To build using Premake on Linux/OSX, navigate to the source code root and run:
 
 >     premake4 gmake
 
 Then navigate into `build/` and just run `make`.
-
-The project itself, as of now, was only compiled and tested on Mac OSX (v10.10.5, AKA Yosemite).
 
 ## Running the tools
 
@@ -105,6 +108,8 @@ have a lot better and more game developers today...
 
 Another big thanks to Scott Bilas for providing detailed documentation and source code
 samples on the Tank format and other details about the inner workings of Dungeon Siege.
+
+Sam Brkopac (sbrkopac) for the CMake script for Windows!
 
 And lastly, the [SiegeTheDay](http://www.siegetheday.org/) community and forums for making
 the 3DMax import/export scripts available. It would have taken many more months to reverse

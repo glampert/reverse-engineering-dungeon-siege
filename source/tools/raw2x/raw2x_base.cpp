@@ -125,7 +125,14 @@ int Raw2xBase::run()
 		const duration<double> elapsedSeconds(t1 - t0);
 		const auto endTime = system_clock::to_time_t(t1);
 
-		std::cout << "Finished execution on " << std::ctime(&endTime)
+#ifdef _MSC_VER
+        char timeStr[256];
+        ctime_s(timeStr, sizeof(timeStr), &endTime);
+#else // _MSC_VER
+        const char * const timeStr = std::ctime(&endTime);
+#endif // _MSC_VER
+
+		std::cout << "Finished execution on " << timeStr
 		          << "Elapsed time: " << elapsedSeconds.count() << "s\n";
 	}
 
