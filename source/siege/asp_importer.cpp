@@ -526,7 +526,7 @@ void AspModel::AspImporter::readBTRI()
 		mesh.faceInfo.cornerStart[0] = 0;
 		for (uint32_t i = 0; i < mesh.textureCount - 1; ++i)
 		{
-			mesh.faceInfo.cornerStart[i + 1] =
+			mesh.faceInfo.cornerStart[i] =
 				mesh.faceInfo.cornerStart[i] + mesh.faceInfo.cornerSpan[i];
 		}
 	}
