@@ -16,16 +16,17 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <cctype>
 
 #if defined(WIN32) || defined(WIN64)
-    #include <direct.h> // _mkdir
-    // Copied from linux libc sys/stat.h:
-    #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
-    #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
-    #define SIEGE_MAKE_DIR(dirname) _mkdir(dirname)
+	#include <direct.h> // _mkdir
+	// Copied from linux libc sys/stat.h:
+	#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+	#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+	#define SIEGE_MAKE_DIR(dirname) _mkdir(dirname)
 #else // !WINDOWS
-    #include <unistd.h>
-    #define SIEGE_MAKE_DIR(dirname) mkdir((dirname), 0777)
+	#include <unistd.h>
+	#define SIEGE_MAKE_DIR(dirname) mkdir((dirname), 0777)
 #endif // WINDOWS
 
 namespace utils
@@ -103,11 +104,18 @@ bool createDirectory(const std::string & dirPath)
 {
 	assert(!dirPath.empty());
 
+	// Just drive letter and colon such as "C:"?
+	if (dirPath.length() <= 2 && std::isalpha(dirPath[0]) && dirPath[1] == ':')
+	{
+		// Cannot create a directory at a drive letter, but this is not a failure.
+		return true;
+	}
+
 	errno = 0;
 	struct stat dirStat = {};
 	if (stat(dirPath.c_str(), &dirStat) != 0)
 	{
-        if (SIEGE_MAKE_DIR(dirPath.c_str()) != 0)
+		if (SIEGE_MAKE_DIR(dirPath.c_str()) != 0)
 		{
 			return false;
 		}
@@ -137,7 +145,7 @@ bool createPath(const std::string & pathEndedWithSeparatorOrFilename)
 	assert(pathEndedWithSeparatorOrFilename.length() < arrayLength(dirPath) && "Pathname too long!");
 
 #ifdef _MSC_VER
-    strcpy_s(dirPath, pathEndedWithSeparatorOrFilename.c_str());
+	strcpy_s(dirPath, pathEndedWithSeparatorOrFilename.c_str());
 #else // _MSC_VER
 	std::strncpy(dirPath, pathEndedWithSeparatorOrFilename.c_str(), arrayLength(dirPath) - 1);
 #endif //_MSC_VER
@@ -196,10 +204,10 @@ bool tryOpen(std::ifstream & file, const std::string & filename, const std::ifst
 std::string getLastFileError()
 {
 #ifdef _MSC_VER
-    std::string str;
-    char errorBuf[512];
-    strerror_s(errorBuf, errno);
-    str = errorBuf;
+	std::string str;
+	char errorBuf[512];
+	strerror_s(errorBuf, errno);
+	str = errorBuf;
 #else // _MSC_VER
 	std::string str{ std::strerror(errno) };
 #endif // _MSC_VER

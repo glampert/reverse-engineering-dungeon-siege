@@ -135,7 +135,10 @@ int Asp2Obj::run()
 
 	// Ensure that the file path is valid.
 	// Create the full path if needed.
-	utils::filesys::createPath(objFileName);
+	if (!utils::filesys::createPath(objFileName))
+	{
+		SiegeThrow(siege::Exception, "Failed to create path \"" << objFileName << "\": " << utils::filesys::getLastFileError());
+	}
 
 	// Open/Write the .OBJ file:
 	{

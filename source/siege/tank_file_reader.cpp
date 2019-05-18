@@ -540,7 +540,10 @@ void TankFile::Reader::extractWholeTank(TankFile & tank, const std::string & des
 	TankReaderLog("Extracting whole Tank to \"" << basePath << "\"...");
 
 	// Create the base path if not there yet:
-	utils::filesys::createPath(basePath);
+	if (!utils::filesys::createPath(basePath))
+	{
+		SiegeThrow(siege::Exception, "Failed to create path \"" << basePath << "\": " << utils::filesys::getLastFileError());
+	}
 
 	// Preallocate for the table size. All entries are potentially files.
 	std::vector<Task> tasks;
@@ -557,7 +560,11 @@ void TankFile::Reader::extractWholeTank(TankFile & tank, const std::string & des
 
 		destFile = basePath + entry.first;
 
-		utils::filesys::createPath(destFile);
+		if (!utils::filesys::createPath(destFile))
+		{
+			SiegeThrow(siege::Exception, "Failed to create path \"" << destFile << "\": " << utils::filesys::getLastFileError());
+		}
+
 		auto task = extractResourceToFileAsync(tank, entry.first, destFile, validateCRCs);
 		tasks.emplace_back(std::move(task));
 	}

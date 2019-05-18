@@ -166,10 +166,10 @@ int TankDump::run()
 		const auto endTime = system_clock::to_time_t(t1);
 
 #ifdef _MSC_VER
-        char timeStr[256];
-        ctime_s(timeStr, sizeof(timeStr), &endTime);
+		char timeStr[256];
+		ctime_s(timeStr, sizeof(timeStr), &endTime);
 #else // _MSC_VER
-        const char * const timeStr = std::ctime(&endTime);
+		const char * const timeStr = std::ctime(&endTime);
 #endif // _MSC_VER
 
 		std::cout << "Finished execution on " << timeStr
@@ -192,7 +192,10 @@ void TankDump::writeFile(std::string destFileName, const siege::ByteArray & file
 
 	// Ensure that the file path is valid.
 	// Create the full path if needed.
-	utils::filesys::createPath(destFileName);
+	if (!utils::filesys::createPath(destFileName))
+	{
+		SiegeThrow(siege::Exception, "Failed to create path \"" << destFileName << "\": " << utils::filesys::getLastFileError());
+	}
 
 	// Open/Write the file:
 	std::ofstream outFile;
@@ -244,7 +247,10 @@ void TankDump::extractAllFiles()
 	VPrint("Extracting whole Tank to path \"" << outputFileDir << "\"...");
 	VPrint("------------------------------");
 
-	utils::filesys::createPath(outputFileDir);
+	if (!utils::filesys::createPath(outputFileDir))
+	{
+		SiegeThrow(siege::Exception, "Failed to create path \"" << outputFileDir << "\": " << utils::filesys::getLastFileError());
+	}
 
 	std::vector<siege::TankFile::Task> taskList;
 	taskList.reserve(tankReader.getFileCount());
@@ -257,7 +263,10 @@ void TankDump::extractAllFiles()
 	for (const auto & resourceName : fileList)
 	{
 		destFilename = outputFileDir + resourceName;
-		utils::filesys::createPath(destFilename);
+		if (!utils::filesys::createPath(destFilename))
+		{
+			SiegeThrow(siege::Exception, "Failed to create path \"" << destFilename << "\": " << utils::filesys::getLastFileError());
+		}
 
 		VPrint("Extracting resource file \"" << resourceName << "\"");
 
