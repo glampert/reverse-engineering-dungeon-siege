@@ -117,7 +117,7 @@ Exception::Exception(const char * error) noexcept
 	if (error != nullptr)
 	{
 #ifdef _MSC_VER
-        strcpy_s(errorMessage, error);
+		strcpy_s(errorMessage, error);
 #else // _MSC_VER
 		std::strncpy(errorMessage, error, sizeof(errorMessage));
 #endif // _MSC_VER

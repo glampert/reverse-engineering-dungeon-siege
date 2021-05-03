@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: siege.hpp
@@ -11,12 +11,7 @@
 //
 // ================================================================================================
 
-#ifndef LIB_SIEGE_HPP
-#define LIB_SIEGE_HPP
-
 #include "siege/tank_file.hpp"
 #include "siege/raw_image.hpp"
 #include "siege/asp_model.hpp"
 #include "siege/sno_model.hpp"
-
-#endif // LIB_SIEGE_HPP

@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: raw2x_base.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef TOOLS_RAW2X_BASE_HPP
-#define TOOLS_RAW2X_BASE_HPP
 
 #include "utils/utils.hpp"
 #include "siege/siege.hpp"
@@ -61,5 +58,3 @@ protected:
 };
 
 } // namespace tools {}
-
-#endif // TOOLS_RAW2X_BASE_HPP

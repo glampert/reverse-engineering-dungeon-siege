@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: raw_image.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_RAW_IMAGE_HPP
-#define SIEGE_RAW_IMAGE_HPP
 
 #include "siege/common.hpp"
 #include "siege/helper_types.hpp"
@@ -133,5 +130,3 @@ private:
 std::ostream & operator << (std::ostream & s, const RawImage & img);
 
 } // namespace siege {}
-
-#endif // SIEGE_RAW_IMAGE_HPP

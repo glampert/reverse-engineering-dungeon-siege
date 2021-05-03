@@ -159,10 +159,10 @@ std::ostream & operator << (std::ostream & s, const FileTime ft)
 	const time_t t = ft.toPortableTime();
 
 #ifdef _MSC_VER
-    std::string ftStr;
-    char ctimeBuf[256];
-    ctime_s(ctimeBuf, sizeof(ctimeBuf), &t);
-    ftStr = ctimeBuf;
+	std::string ftStr;
+	char ctimeBuf[256];
+	ctime_s(ctimeBuf, sizeof(ctimeBuf), &t);
+	ftStr = ctimeBuf;
 #else // _MSC_VER
 	std::string ftStr = std::ctime(&t);
 #endif // _MSC_VER

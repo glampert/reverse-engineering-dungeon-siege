@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: helper_types.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_HELPER_TYPES_HPP
-#define SIEGE_HELPER_TYPES_HPP
 
 #include <cstdint>
 #include <ctime>
@@ -121,5 +118,3 @@ std::ostream & operator << (std::ostream & s, FileTime ft);
 #pragma pack(pop)
 
 } // namespace siege {}
-
-#endif // SIEGE_HELPER_TYPES_HPP

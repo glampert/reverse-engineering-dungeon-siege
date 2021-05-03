@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 project (reverse-engineering-dungeon-siege VERSION 0.1 LANGUAGES CXX)
 
-file (GLOB_RECURSE SIEGE_SOURCE "source/siege/*.cpp")
-file (GLOB_RECURSE UTILS_SOURCE "source/utils/*.cpp")
+file (GLOB_RECURSE SIEGE_SOURCE "source/siege/*.cpp" "source/siege/*.hpp")
+file (GLOB_RECURSE UTILS_SOURCE "source/utils/*.cpp" "source/utils/*.hpp")
 
 include_directories ("source")
 

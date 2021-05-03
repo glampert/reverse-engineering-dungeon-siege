@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: sno_model.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_SNO_MODEL_HPP
-#define SIEGE_SNO_MODEL_HPP
 
 #include "siege/common.hpp"
 #include "siege/helper_types.hpp"
@@ -231,5 +228,3 @@ private:
 };
 
 } // namespace siege {}
-
-#endif // SIEGE_SNO_MODEL_HPP

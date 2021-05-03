@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: asp_model.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_ASP_MODEL_HPP
-#define SIEGE_ASP_MODEL_HPP
 
 #include "siege/common.hpp"
 #include "siege/helper_types.hpp"
@@ -232,5 +229,3 @@ private:
 };
 
 } // namespace siege {}
-
-#endif // SIEGE_ASP_MODEL_HPP

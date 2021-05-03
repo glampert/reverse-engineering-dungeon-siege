@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: compression.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef UTILS_COMPRESSION_HPP
-#define UTILS_COMPRESSION_HPP
 
 #include "utils/common.hpp"
 
@@ -60,5 +57,3 @@ std::string getErrorString(int errorCode);
 
 } // namespace compression {}
 } // namespace utils {}
-
-#endif // UTILS_COMPRESSION_HPP

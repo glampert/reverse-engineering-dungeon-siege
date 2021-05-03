@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: common.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef UTILS_COMMON_HPP
-#define UTILS_COMMON_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -126,5 +123,3 @@ public:
 };
 
 } // namespace utils {}
-
-#endif // UTILS_COMMON_HPP

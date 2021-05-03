@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: vectors.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef UTILS_VECTORS_HPP
-#define UTILS_VECTORS_HPP
 
 #include "utils/common.hpp"
 #include <cmath>
@@ -1445,5 +1442,3 @@ using internal::clamp; // Element-wise clamping
 using internal::toString;
 
 } // namespace utils {}
-
-#endif // UTILS_VECTORS_HPP

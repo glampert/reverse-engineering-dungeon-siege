@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: common.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_COMMON_HPP
-#define SIEGE_COMMON_HPP
 
 #include "utils/utils.hpp"
 
@@ -140,5 +137,3 @@ private:
 	} while (0)
 
 } // namespace siege {}
-
-#endif // SIEGE_COMMON_HPP

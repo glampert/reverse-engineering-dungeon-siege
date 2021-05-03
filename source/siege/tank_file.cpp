@@ -134,7 +134,7 @@ TankFile::CompressedFileEntryHeader::CompressedFileEntryHeader(const uint32_t nC
 
 TankFile::FileEntry::FileEntry(const uint32_t nParentOffs, const uint32_t nSize,
                                const uint32_t nOffset, const uint32_t crc, const FileTime ft,
-                               const DataFormat dataFormat, const uint16_t fileFlags, std::string filename)
+                               const DataFormat dataFormat, const FileFlags fileFlags, std::string filename)
 	: parentOffset(nParentOffs)
 	, size(nSize)
 	, offset(nOffset)
@@ -298,7 +298,8 @@ TankFile::Error::~Error()
 // Static properties of TankFile:
 // ========================================================
 
-const FourCC TankFile::ProductId     = { 'D', 'S', 'i', 'g' }; // 'DSig'
+const FourCC TankFile::ProductId_DS1 = { 'D', 'S', 'i', 'g' }; // 'DSig' (DS1/LOA)
+const FourCC TankFile::ProductId_DS2 = { 'D', 'S', 'g', '2' }; // 'DSg2' (DS2)
 const FourCC TankFile::TankId        = { 'T', 'a', 'n', 'k' }; // 'Tank'
 const FourCC TankFile::CreatorIdGPG  = { '!', 'G', 'P', 'G' }; // '!GPG'
 const FourCC TankFile::CreatorIdUser = { 'U', 'S', 'E', 'R' }; // 'USER'
@@ -316,7 +317,11 @@ std::string TankFile::priorityToString(const Priority priority)
 	case Priority::Expansion : return "Expansion";
 	case Priority::Patch     : return "Patch";
 	case Priority::User      : return "User";
-	default : SiegeThrow(TankFile::Error, "Invalid TankFile::Priority flag!");
+	default : {
+			std::string s = "Unknown TankFile::Priority -> ";
+			s += std::to_string(static_cast<uint32_t>(priority));
+			return s;
+		}
 	} // switch (priority)
 }
 
@@ -337,7 +342,11 @@ std::string TankFile::dataFormatToString(const DataFormat format)
 	case DataFormat::Raw  : return "Raw";
 	case DataFormat::Zlib : return "Zlib";
 	case DataFormat::Lzo  : return "Lzo";
-	default : SiegeThrow(TankFile::Error, "Invalid TankFile::DataFormat flag!");
+	default : {
+			std::string s = "Unknown TankFile::DataFormat -> ";
+			s += std::to_string(static_cast<uint16_t>(format));
+			return s;
+		}
 	} // switch (format)
 }
 
@@ -496,7 +505,7 @@ void TankFile::readAndValidateHeader()
 	#endif // SIEGE_TANK_DEBUG
 
 	// Fatal errors:
-	if (fileHeader.productId != TankFile::ProductId)
+	if ((fileHeader.productId != TankFile::ProductId_DS1) && (fileHeader.productId != TankFile::ProductId_DS2))
 	{
 		SiegeThrow(TankFile::Error, "\"" << fileName
 				<< "\": Header product id doesn't match the expected value!");
@@ -508,12 +517,11 @@ void TankFile::readAndValidateHeader()
 	}
 
 	// Warnings:
-	if (fileHeader.creatorId != TankFile::CreatorIdGPG &&
-	    fileHeader.creatorId != TankFile::CreatorIdUser)
+	if ((fileHeader.creatorId != TankFile::CreatorIdGPG) && (fileHeader.creatorId != TankFile::CreatorIdUser))
 	{
 		SiegeWarn("Tank creator id is unknown: " << fileHeader.creatorId);
 	}
-	if (fileHeader.headerVersion != Header::ExpectedVersion)
+	if ((fileHeader.headerVersion != Header::ExpectedVersion_DS1) && (fileHeader.headerVersion != Header::ExpectedVersion_DS2))
 	{
 		SiegeWarn("Unknown Tank header version: " << fileHeader.headerVersion);
 	}

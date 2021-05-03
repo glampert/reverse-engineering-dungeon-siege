@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: tank_file.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef SIEGE_TANK_FILE_HPP
-#define SIEGE_TANK_FILE_HPP
 
 #include "siege/common.hpp"
 #include "siege/helper_types.hpp"
@@ -95,8 +92,11 @@ public:
 	//  Flags used per file resource.
 	//  Max width = 16 bits.
 	//
-	static constexpr uint16_t FileFlagNone    = 0;
-	static constexpr uint16_t FileFlagInvalid = 1 << 15; // This resource had a problem during construction and is invalid.
+	enum FileFlags : uint16_t
+	{
+		FileFlagNone    = 0,
+		FileFlagInvalid = 1 << 15, // This resource had a problem during construction and is invalid.
+	};
 
 	//
 	// Other miscellaneous constants:
@@ -111,7 +111,8 @@ public:
 	//
 	// Four Character Codes:
 	//
-	static const FourCC ProductId;     // 'DSig'
+	static const FourCC ProductId_DS1; // 'DSig' (Dungeon Siege 1 and LOA Tank files)
+	static const FourCC ProductId_DS2; // 'DSg2' (Dungeon Siege 2 Tank files)
 	static const FourCC TankId;        // 'Tank'
 	static const FourCC CreatorIdGPG;  // '!GPG'
 	static const FourCC CreatorIdUser; // 'USER'
@@ -140,7 +141,8 @@ public:
 		static constexpr uint32_t TitleTextMaxLength     = 100;
 		static constexpr uint32_t AuthorTextMaxLength    = 40;
 		static constexpr uint32_t RawHeaderPad           = 16; // Used for padding between end of header and start of raw data
-		static constexpr uint32_t ExpectedVersion        = makeVersionWord(1, 0, 2); // Version used on Dungeon Siege 1
+		static constexpr uint32_t ExpectedVersion_DS1    = makeVersionWord(1, 0, 2); // Version used on Dungeon Siege 1 and LOA
+		static constexpr uint32_t ExpectedVersion_DS2    = makeVersionWord(1, 1, 0); // Version used on Dungeon Siege 2
 
 		// ------ Base ------
 		FourCC         productId;                             // (R4) ID of product (human readable) - always ProductId
@@ -224,11 +226,11 @@ public:
 		const uint32_t    crc32;        // CRC-32 of just this resource
 		const FileTime    fileTime;     // last Modified timestamp of file when it was added
 		const DataFormat  format;       // (E) Data format (DataFormat)
-		const uint16_t    flags;        // (EB) Tank file flags (FileFlag*)
+		const FileFlags   flags;        // (EB) Tank file flags (FileFlag*)
 		const std::string name;         // What's my name?
 
 		FileEntry(uint32_t nParentOffs, uint32_t nSize, uint32_t nOffset, uint32_t crc,
-		          FileTime ft, DataFormat dataFormat, uint16_t fileFlags, std::string filename);
+		          FileTime ft, DataFormat dataFormat, FileFlags fileFlags, std::string filename);
 
 		void setCompressedHeader(std::unique_ptr<CompressedFileEntryHeader> header);
 
@@ -447,10 +449,8 @@ private:
 	std::ifstream  file;
 	std::string    fileName;
 	Header         fileHeader;
-	OpenMode       fileOpenMode  = 0;
+	OpenMode       fileOpenMode = {};
 	size_t         fileSizeBytes = 0;
 };
 
 } // namespace siege {}
-
-#endif // SIEGE_TANK_FILE_HPP

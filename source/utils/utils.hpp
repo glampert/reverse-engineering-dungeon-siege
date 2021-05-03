@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: utils.hpp
@@ -11,13 +11,8 @@
 //
 // ================================================================================================
 
-#ifndef LIB_UTILS_HPP
-#define LIB_UTILS_HPP
-
 #include "utils/common.hpp"
 #include "utils/vectors.hpp"
 #include "utils/filesys.hpp"
 #include "utils/compression.hpp"
 #include "utils/simple_cmdline_parser.hpp"
-
-#endif // LIB_UTILS_HPP

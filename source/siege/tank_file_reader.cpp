@@ -201,7 +201,7 @@ void TankFile::Reader::readFileSet(TankFile & tank)
 		TankReaderLog("-");
 
 		fileSet->fileEntries.emplace_back(fileParentOffset, fileEntrySize, fileDataOffset,
-				fileCrc32, fileTime, fileDataFormat, fileFlags, fileEntryName);
+				fileCrc32, fileTime, fileDataFormat, static_cast<TankFile::FileFlags>(fileFlags), fileEntryName);
 
 		// We need to grab the compressed header for the compressed file entries.
 		if (TankFile::isDataFormatCompressed(fileDataFormat) && fileEntrySize != 0)
@@ -406,16 +406,20 @@ ByteArray TankFile::Reader::extractResourceToMemory(TankFile & tank, const std::
 	assert(entry.ptr.file != nullptr);
 	const TankFile::FileEntry & resFile = *(entry.ptr.file);
 
-	if (resFile.isInvalidFile())
+	ByteArray fileContents;
+
+	if (resFile.isInvalidFile() || resFile.size == 0)
 	{
-		// NOTE: Not sure if this should be a hard error...
+		// NOTE: Invalid files seem to exist in DSLOA Tank files, so this should be handled gracefully.
 		SiegeWarn("Resource file entry \"" << resFile.name << "\" is flagged as invalid!");
+
+		// Return an empty file.
+		return fileContents;
 	}
 
-	const auto fileOffset  = resFile.offset;
-	const auto fileSize    = resFile.size;
-	const auto dataOffset  = tank.getFileHeader().dataOffset;
-	ByteArray fileContents;
+	const auto fileOffset = resFile.offset;
+	const auto fileSize   = resFile.size;
+	const auto dataOffset = tank.getFileHeader().dataOffset;
 
 	if (!resFile.isCompressed()) // Simple raw resource file:
 	{

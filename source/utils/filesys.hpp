@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: filesys.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef UTILS_FILESYS_HPP
-#define UTILS_FILESYS_HPP
 
 #include "utils/common.hpp"
 #include <fstream>
@@ -52,5 +49,3 @@ std::string getLastFileError();
 
 } // namespace filesys {}
 } // namespace utils {}
-
-#endif // UTILS_FILESYS_HPP

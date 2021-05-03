@@ -1,3 +1,0 @@
-
-This file is here so that Git creates the directory entry for it in the repo.
-

@@ -1,4 +1,4 @@
-
+#pragma once
 // ================================================================================================
 // -*- C++ -*-
 // File: simple_cmdline_parser.hpp
@@ -10,9 +10,6 @@
 // - http://opensource.org/licenses/MIT
 //
 // ================================================================================================
-
-#ifndef UTILS_SIMPLE_CMDLINE_PARSER_HPP
-#define UTILS_SIMPLE_CMDLINE_PARSER_HPP
 
 #include <string>
 #include <vector>
@@ -117,5 +114,3 @@ private:
 };
 
 } // namespace utils {}
-
-#endif // UTILS_SIMPLE_CMDLINE_PARSER_HPP
