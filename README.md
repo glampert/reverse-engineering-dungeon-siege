@@ -92,12 +92,16 @@ It can also perform a full or partial decompression of a Tank into normal files 
 
 - `raw2png`: Converts RAW textures to compressed PNGs.
 
+- `tga2raw`: Converts TGA images back into Dungeon Siege RAW format.
+
 - `asp2obj`: Converts ASP models to portable OBJ models. No animation support is available.
 
 - `sno2obj`: Converts SNO models to portable OBJ models. SNO models are always static geometry used for the terrain/buildings.
 
 All the above tools can be called with the `-h` or `--help` flags to display more
 detailed usage information and the other available command line flags.
+
+Prebuild Windows binaries are provided in the [build folder](https://github.com/glampert/reverse-engineering-dungeon-siege/tree/master/build).
 
 ## Special thanks
 
