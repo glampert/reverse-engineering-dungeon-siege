@@ -60,11 +60,17 @@ public:
 	// Load RAW from memory. Discards current, if any.
 	void initFromMemory(ByteArray fileContents, std::string filename = "");
 
+	// Init from existing pixel buffer. Can optionally swizzle RGBA <=> BGRA but assume `pixels` is BGRA by default.
+	void initFromPixelBuffer(const Pixel * const buffer, unsigned int width, unsigned int height, bool swizzlePixels, std::string filename = "");
+
 	// Dumps a given surface to disk as an uncompressed TGA image file. No default filename extension provided!
 	void writeSurfaceAsTgaImage(unsigned int surfaceIndex, const std::string & filename, bool swizzlePixels) const;
 
 	// Dumps a given surface to disk as a compressed PNG image file. No default filename extension provided!
 	void writeSurfaceAsPngImage(unsigned int surfaceIndex, const std::string & filename, bool swizzlePixels) const;
+
+	// Saves this .raw image to a file.
+	void writeToFile() const;
 
 	// Manually Disposes the current image data, if any. Automatically disposed by the destructor.
 	void dispose();
@@ -128,5 +134,8 @@ private:
 
 // Output operator for RawImage debug printing:
 std::ostream & operator << (std::ostream & s, const RawImage & img);
+
+// Load TGA image from file into memory and convert it to 32bits BGRA.
+std::unique_ptr<RawImage::Pixel[]> loadTgaImageFromFile(const std::string& filename, int * width, int * height);
 
 } // namespace siege {}

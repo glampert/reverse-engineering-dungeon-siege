@@ -207,6 +207,49 @@ void RawImage::initFromMemory(ByteArray fileContents, std::string filename)
 			<< width << "x" << height << " px, " << surfaceCount << " surfaces.");
 }
 
+void RawImage::initFromPixelBuffer(const Pixel * const buffer, unsigned int width, unsigned int height, bool swizzlePixels, std::string filename)
+{
+	assert(buffer != nullptr);
+	assert(width  <= UINT16_MAX);
+	assert(height <= UINT16_MAX);
+
+	dispose();
+
+	const size_t pixelCount  = (width * height);
+	const size_t storageSize = sizeof(Header) + (pixelCount * sizeof(Pixel));
+	rawData.resize(storageSize);
+
+	this->srcFileName    = std::move(filename);
+	this->width          = width;
+	this->height         = height;
+	this->surfaceCount   = 1; // No mipmaps
+
+	auto * header = reinterpret_cast<Header *>(rawData.data());
+	auto * pixels = reinterpret_cast<Pixel  *>(header + 1);
+
+	header->magic        = FourCC{ 'i','p','a','R' };
+	header->format       = FourCC{ '8','8','8','8' };
+	header->flags        = 0; // No flags
+	header->surfaceCount = 1; // No mipmaps
+	header->width        = static_cast<uint16_t>(width);
+	header->height       = static_cast<uint16_t>(height);
+
+	if (swizzlePixels) // RGBA <=> BGRA swizzle
+	{
+		for (size_t i = 0; i < pixelCount; ++i)
+		{
+			pixels[i].b = buffer[i].r;
+			pixels[i].g = buffer[i].g;
+			pixels[i].r = buffer[i].b;
+			pixels[i].a = buffer[i].a;
+		}
+	}
+	else // Assume input is BRGA
+	{
+		std::memcpy(pixels, buffer, pixelCount * sizeof(Pixel));
+	}
+}
+
 void RawImage::writeSurfaceAsTgaImage(const unsigned int surfaceIndex,
                                       const std::string & filename,
                                       const bool swizzlePixels) const
@@ -373,6 +416,20 @@ void RawImage::writeSurfaceAsPngImage(const unsigned int surfaceIndex,
 	SiegeLog("Successfully written PNG image to file \"" + filename + "\".");
 }
 
+void RawImage::writeToFile() const
+{
+	const char * const fname = (!srcFileName.empty() ? srcFileName.c_str() : "image.raw");
+
+	std::ofstream outFile;
+	if (!utils::filesys::tryOpen(outFile, fname, std::ofstream::binary))
+	{
+		SiegeThrow(Exception, "Unable to open file \"" << fname
+			<< "\" for writing! " << utils::filesys::getLastFileError());
+	}
+
+	outFile.write(reinterpret_cast<const char*>(rawData.data()), rawData.size());
+}
+
 // ========================================================
 // Output operator for RawImage debug printing:
 // ========================================================
@@ -395,6 +452,271 @@ std::ostream & operator << (std::ostream & s, const RawImage & img)
 	s << "=============================";
 
 	return s;
+}
+
+// ========================================================
+// TGA image loader:
+// - Output image is always BGRA 32bits
+//   (matching the Raw pixel format).
+// ========================================================
+
+std::unique_ptr<RawImage::Pixel[]> loadTgaImageFromFile(const std::string& filename, int * width, int * height)
+{
+	size_t fileSize = 0;
+	if (!utils::filesys::queryFileSize(filename, fileSize))
+	{
+		SiegeThrow(Exception, "Unable to query image file size: \"" << filename
+			<< "\" - " << utils::filesys::getLastFileError());
+	}
+
+	std::ifstream inFile;
+	if (!utils::filesys::tryOpen(inFile, filename, std::ifstream::binary))
+	{
+		SiegeThrow(Exception, "Unable to open image file \"" << filename
+			<< "\" for reading! " << utils::filesys::getLastFileError());
+	}
+
+	ByteArray fileData;
+	fileData.resize(fileSize);
+	inFile.read(reinterpret_cast<char*>(fileData.data()), fileData.size());
+
+	struct TGAFileHeader
+	{
+		uint8_t  idLength;
+		uint8_t  colormapType;
+		uint8_t  imageType;
+		uint16_t colormapIndex;
+		uint16_t colormapLength;
+		uint8_t  colormapSize;
+		uint16_t xOrigin;
+		uint16_t yOrigin;
+		uint16_t width;
+		uint16_t height;
+		uint8_t  pixelSize;
+		uint8_t  attributes;
+	};
+
+	TGAFileHeader header = {};
+	alignas(uint32_t) uint8_t tmp[2] = {};
+
+	const uint8_t * buf_p = fileData.data();
+	header.idLength       = *buf_p++;
+	header.colormapType   = *buf_p++;
+	header.imageType      = *buf_p++;
+
+	tmp[0] = buf_p[0];
+	tmp[1] = buf_p[1];
+	header.colormapIndex = *reinterpret_cast<const uint16_t *>(tmp);
+	buf_p += 2;
+
+	tmp[0] = buf_p[0];
+	tmp[1] = buf_p[1];
+	header.colormapLength = *reinterpret_cast<const uint16_t *>(tmp);
+	buf_p += 2;
+
+	header.colormapSize = *buf_p++;
+
+	header.xOrigin = *reinterpret_cast<const uint16_t *>(buf_p); buf_p += 2;
+	header.yOrigin = *reinterpret_cast<const uint16_t *>(buf_p); buf_p += 2;
+	header.width   = *reinterpret_cast<const uint16_t *>(buf_p); buf_p += 2;
+	header.height  = *reinterpret_cast<const uint16_t *>(buf_p); buf_p += 2;
+
+	header.pixelSize  = *buf_p++;
+	header.attributes = *buf_p++;
+
+	if (header.imageType != 2 && header.imageType != 10)
+	{
+		SiegeThrow(Exception, "Only type 2 and 10 TARGA RGB images supported! " << filename);
+	}
+	if (header.colormapType != 0 || (header.pixelSize != 32 && header.pixelSize != 24))
+	{
+		SiegeThrow(Exception, "Only 32 or 24 bit TGA images supported (no colormaps)! " << filename);
+	}
+
+	const int columns    = header.width;
+	const int rows       = header.height;
+	const int pixelCount = columns * rows;
+
+	if (width != nullptr)
+	{
+		*width = columns;
+	}
+	if (height != nullptr)
+	{
+		*height = rows;
+	}
+
+	std::unique_ptr<RawImage::Pixel[]> result{ new RawImage::Pixel[pixelCount] };
+	auto * decodedImage = reinterpret_cast<uint8_t *>(result.get());
+
+	if (header.idLength != 0)
+	{
+		buf_p += header.idLength; // skip TARGA image comment
+	}
+
+	if (header.imageType == 2) // Uncompressed, RGB images
+	{
+		for (int row = rows - 1; row >= 0; --row)
+		{
+			uint8_t * pixbuf = decodedImage + row * columns * 4;
+			for (int column = 0; column < columns; ++column)
+			{
+				uint8_t red, green, blue, alpha;
+				switch (header.pixelSize)
+				{
+				case 24:
+					blue      = *buf_p++;
+					green     = *buf_p++;
+					red       = *buf_p++;
+					*pixbuf++ = blue;
+					*pixbuf++ = green;
+					*pixbuf++ = red;
+					*pixbuf++ = 255;
+					break;
+
+				case 32:
+					blue      = *buf_p++;
+					green     = *buf_p++;
+					red       = *buf_p++;
+					alpha     = *buf_p++;
+					*pixbuf++ = blue;
+					*pixbuf++ = green;
+					*pixbuf++ = red;
+					*pixbuf++ = alpha;
+					break;
+
+				default:
+					assert(false);
+				} // switch
+			}
+		}
+	}
+	else if (header.imageType == 10) // Run-length encoded RGB images
+	{
+		uint8_t red, green, blue, alpha;
+		uint8_t packetHeader, packetSize, j;
+
+		for (int row = rows - 1; row >= 0; --row)
+		{
+			uint8_t * pixbuf = decodedImage + row * columns * 4;
+			for (int column = 0; column < columns;)
+			{
+				packetHeader = *buf_p++;
+				packetSize = 1 + (packetHeader & 0x7F);
+
+				if (packetHeader & 0x80) // Run-length packet
+				{
+					switch (header.pixelSize)
+					{
+					case 24:
+						blue  = *buf_p++;
+						green = *buf_p++;
+						red   = *buf_p++;
+						alpha = 255;
+						break;
+
+					case 32:
+						blue  = *buf_p++;
+						green = *buf_p++;
+						red   = *buf_p++;
+						alpha = *buf_p++;
+						break;
+
+					default:
+						assert(false);
+					} // switch
+
+					for (j = 0; j < packetSize; ++j)
+					{
+						*pixbuf++ = blue;
+						*pixbuf++ = green;
+						*pixbuf++ = red;
+						*pixbuf++ = alpha;
+
+						++column;
+						if (column == columns) // run spans across rows
+						{
+							column = 0;
+							if (row > 0)
+							{
+								--row;
+							}
+							else
+							{
+								goto BREAKOUT;
+							}
+							pixbuf = decodedImage + row * columns * 4;
+						}
+					}
+				}
+				else // Non run-length packet
+				{
+					for (j = 0; j < packetSize; ++j)
+					{
+						switch (header.pixelSize)
+						{
+						case 24:
+							blue      = *buf_p++;
+							green     = *buf_p++;
+							red       = *buf_p++;
+							*pixbuf++ = blue;
+							*pixbuf++ = green;
+							*pixbuf++ = red;
+							*pixbuf++ = 255;
+							break;
+
+						case 32:
+							blue      = *buf_p++;
+							green     = *buf_p++;
+							red       = *buf_p++;
+							alpha     = *buf_p++;
+							*pixbuf++ = blue;
+							*pixbuf++ = green;
+							*pixbuf++ = red;
+							*pixbuf++ = alpha;
+							break;
+
+						default:
+							assert(false);
+						} // switch
+
+						++column;
+						if (column == columns) // pixel packet run spans across rows
+						{
+							column = 0;
+							if (row > 0)
+							{
+								--row;
+							}
+							else
+							{
+								goto BREAKOUT;
+							}
+							pixbuf = decodedImage + row * columns * 4;
+						}
+					}
+				}
+			}
+		BREAKOUT:
+			;
+		}
+	}
+
+	// Flip vertically
+	{
+		const int maxY = rows - 1;
+		const int halfHeight = rows / 2;
+
+		for (int y = 0; y < halfHeight; ++y)
+		{
+			for (int x = 0; x < columns; ++x)
+			{
+				std::swap(result[x + y * columns], result[x + (maxY - y) * columns]);
+			}
+		}
+	}
+
+	return result;
 }
 
 } // namespace siege {}

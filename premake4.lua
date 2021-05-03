@@ -169,3 +169,13 @@ project("sno2obj");
 	files({ "source/tools/sno2obj/sno2obj.cpp" });
 	links({ LIB_UTILS_NAME, LIB_SIEGE_NAME });
 
+-----------------------------------------------------------
+-- tga2raw command line tool:
+-----------------------------------------------------------
+project("tga2raw");
+	language("C++");
+	kind("ConsoleApp");
+	configuration("macosx", "linux", "gmake"); -- Debug & Release
+	buildoptions({ COMMON_COMPILER_FLAGS, CPLUSPLUS_FLAGS });
+	files({ "source/tools/tga2raw/tga2raw.cpp" });
+	links({ LIB_UTILS_NAME, LIB_SIEGE_NAME });
