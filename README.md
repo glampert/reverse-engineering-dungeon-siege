@@ -5,6 +5,8 @@ This repository contains tools and code to extract and convert game assets
 of the [Dungeon Siege][link_dsiege] and [Dungeon Siege: Legends of Aranna][link_ds_loa]
 games, from developer *Gas Powered Games* (GPG).
 
+**UPDATE:** See the [OpenSiege](https://github.com/OpenSiege) project for other more recent work on Dungeon Siege.
+
 This project aims at reverse engineering the main file formats used by Dungeon Siege
 to store its game assets (i.e.: textures, 3D models, sounds) and to provide tools
 for converting them to more standard formats that can be opened/viewed outside the game.
